@@ -121,8 +121,8 @@
                   :checkOut='checkOut'
                   :currentDateStyle='currentDateStyle'
                 )
-            .next--mobile(
-              @click='renderNextMonth' type="button"
+            button.next--mobile(
+              @click='renderNextMonthAndScroll' type="button"
             )
 
 </template>
@@ -284,8 +284,14 @@
             bodyClassList.add('-overflow-hidden');
             setTimeout(() => {
               let swiperWrapper = document.getElementById('swiperWrapper')
-              let monthHeihgt = document.querySelector('.datepicker__month').offsetHeight
-              swiperWrapper.scrollTop = this.activeMonthIndex * monthHeihgt
+              let monthHeight = document.querySelector('.datepicker__month').offsetHeight
+
+              // swiperWrapper.scrollTop = this.activeMonthIndex * monthHeight
+              swiperWrapper.scroll({
+                top: this.activeMonthIndex * monthHeight,
+                left: 0, 
+                behavior: 'smooth' 
+              })
             },100)
           }
           else {
@@ -422,7 +428,20 @@
         else return
       },
 
-      renderNextMonth: throttle(function throttleRenderNextMonth() {
+      renderNextMonthAndScroll($event) {
+        this.renderNextMonth($event, () => {
+          let swiperWrapper = document.getElementById('swiperWrapper')
+          let monthHeight = document.querySelector('.datepicker__month').offsetHeight
+          // swiperWrapper.scrollTop = this.activeMonthIndex * monthHeight
+          swiperWrapper.scroll({
+            top: this.activeMonthIndex * monthHeight,
+            left: 0, 
+            behavior: 'smooth' 
+          })
+        })
+      },
+
+      renderNextMonth: throttle(function throttleRenderNextMonth($event, callback) {
         if (this.activeMonthIndex < this.months.length - 2) {
           this.activeMonthIndex++;
           return
@@ -452,6 +471,9 @@
         );
 
         this.activeMonthIndex++;
+        if(typeof callback === 'function') {
+          this.$nextTick(callback)
+        }
       }, 200),
 
       setCheckIn(date) {
@@ -638,7 +660,7 @@
             bottom: 0;
             left: 0;
             outline: none;
-            box-shadow: 0 5px 30px 10px rgba($black, .08);
+            // box-shadow: 0 5px 30px 10px rgba($black, .08);
             background: white;
 
             &:after {
@@ -654,16 +676,16 @@
         }
 
         &--closed {
-            box-shadow: 0 15px 30px 10px rgba($black, 0);
+            // box-shadow: 0 15px 30px 10px rgba($black, 0);
             max-height: 0;
         }
 
         &--open {
-            box-shadow: 0 15px 30px 10px rgba($black, .08);
+            // box-shadow: 0 15px 30px 10px rgba($black, .08);
             max-height: 900px;
 
             @include device($up-to-tablet) {
-                box-shadow: none;
+                // box-shadow: none;
                 height: 100%;
                 left: 0;
                 right: 0;
@@ -794,7 +816,7 @@
                 color: $primary-color;
                 z-index: 1;
                 position: relative;
-                box-shadow: 0 0 10px 3px rgba($gray, .4);
+                // box-shadow: 0 0 10px 3px rgba($gray, .4);
             }
 
             &--disabled {
@@ -813,7 +835,7 @@
                     color: $primary-color;
                     z-index: 1;
                     position: relative;
-                    box-shadow: 0 0 10px 3px rgba($gray, .4);
+                    // box-shadow: 0 0 10px 3px rgba($gray, .4);
                 }
             }
 
@@ -969,7 +991,7 @@
             height: 38px;
 
             @include device($up-to-tablet) {
-                box-shadow: 0 13px 18px -8px rgba($black, .07);
+                // box-shadow: 0 13px 18px -8px rgba($black, .07);
                 height: 25px;
                 left: 0;
                 top: 65px;
